@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alessandra Store | Excelência em Tecnologia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --dourado: #D4AF37;
+            --preto-profundo: #050505;
+            --cinza-card: #121212;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        
+        body { 
+            background-color: var(--preto-profundo); 
+            color: #fff; 
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 8%;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* Logo Redonda e Maior */
+        .logo img {
+            height: 80px;
+            width: 80px;
+            display: block;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--dourado);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        nav ul { display: flex; list-style: none; }
+        nav ul li { margin-left: 30px; }
+        nav ul li a { color: #fff; text-decoration: none; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.4s; }
+        nav ul li a:hover { color: var(--dourado); }
+
+        .hero {
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            /* Nova Imagem de fundo focada em Tecnologia Premium */
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7), var(--preto-profundo)), 
+                        url('https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            padding: 0 5%;
+        }
+
+        .hero h1 { 
+            font-size: 3.5rem; 
+            font-weight: 800;
+            color: #fff; 
+            margin-bottom: 15px; 
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            max-width: 900px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .hero h1 span {
+            display: block;
+            color: var(--dourado);
+            font-size: 1.1rem;
+            letter-spacing: 8px;
+            margin-top: 15px;
+            font-weight: 400;
+        }
+
+        .hero p { font-size: 1rem; margin-bottom: 40px; color: #ccc; max-width: 600px; font-weight: 300; }
+
+        .btn-ver-produtos {
+            padding: 18px 50px;
+            background-color: var(--dourado);
+            color: #000;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.5s;
+            border: 1px solid var(--dourado);
+        }
+
+        .btn-ver-produtos:hover {
+            background-color: transparent;
+            color: var(--dourado);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .section-title { 
+            text-align: center; 
+            margin-top: 100px; 
+            font-size: 1.5rem; 
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+        }
+        .section-title b { color: var(--dourado); font-weight: 800; }
+
+        #destaques {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            padding: 60px 10%;
+        }
+
+        .card {
+            background: var(--cinza-card);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 30px;
+            transition: 0.5s;
+            text-align: center;
+        }
+
+        .card:hover { border-color: var(--dourado); transform: translateY(-10px); }
+        .card img { width: 100%; margin-bottom: 25px; border-radius: 4px; }
+        .card h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .card .preco { color: var(--dourado); font-weight: 700; font-size: 1.3rem; }
+
+        .testimonials {
+            padding: 100px 10%;
+            background: linear-gradient(to bottom, var(--preto-profundo), #0a0a0a);
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .testimonial-item {
+            background: rgba(255,255,255,0.02);
+            padding: 40px;
+            border-radius: 2px;
+            border-left: 2px solid var(--dourado);
+            position: relative;
+        }
+
+        .testimonial-item p {
+            font-style: italic;
+            color: #ccc;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        .testimonial-item h4 {
+            color: var(--dourado);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .quote-icon {
+            font-size: 3rem;
+            color: rgba(212, 175, 55, 0.1);
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-family: serif;
+        }
+
+        footer { 
+            text-align: center; 
+            padding: 60px; 
+            background-color: #000;
+            border-top: 1px solid rgba(212, 175, 55, 0.1); 
+            color: #444; 
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">
+            <img src="ale.png" alt="Logo Alessandra Store">
+        </a>
+        <nav>
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="produtos.html">Coleções</a></li>
+                <li><a href="#">Contato</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>ONDE O PODER ENCONTRA A ELEGÂNCIA<span>A EXPERIÊNCIA DEFINITIVA EM HARDWARE</span></h1>
+        <p>Não oferecemos apenas periféricos. Entregamos as ferramentas para você dominar o seu universo digital com sofisticação.</p>
+        <a href="produtos.html" class="btn-ver-produtos">Descubra a Coleção</a>
+    </section>
+
+    <h2 class="section-title">Nossos <b>Favoritos</b></h2>
+
+    <main id="destaques">
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=400&q=80" alt="Mouse">
+            <h3>Mouse Stealth Gold</h3>
+            <p class="preco">R$ 259,00</p>
+        </div>
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?auto=format&fit=crop&w=400&q=80" alt="Teclado">
+            <h3>Teclado Carbon Pro</h3>
+            <p class="preco">R$ 580,00</p>
+        </div>
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=400&q=80" alt="Fone">
+            <h3>Headset Pure Sound</h3>
+            <p class="preco">R$ 420,00</p>
+        </div>
+    </main>
+
+    <section class="testimonials">
+        <h2 class="section-title">O que dizem nossos <b>Clientes</b></h2>
+        <div class="testimonial-grid">
+            <div class="testimonial-item">
+                <div class="quote-icon">"</div>
+                <p>O mouse que comprei superou todas as expectativas. O acabamento é impecável e a entrega foi extremamente rápida.</p>
+                <h4>— Ricardo M.</h4>
+            </div>
+            <div class="testimonial-item">
+                <div class="quote-icon">"</div>
+                <p>É difícil encontrar uma loja com um atendimento tão personalizado. Realmente transmitem a sensação de exclusividade.</p>
+                <h4>— Mariana S.</h4>
+            </div>
+            <div class="testimonial-item">
+                <div class="quote-icon">"</div>
+                <p>O setup do meu escritório mudou completamente de nível. O dourado dos produtos traz uma elegância incomparável.</p>
+                <h4>— Carlos Eduardo</h4>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Alessandra Store - Excellence in Technology</p>
+    </footer>
+
+</body>
+</html>
