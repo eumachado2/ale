@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Admin | Alessandra Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #050505; color: white; font-family: 'Poppins', sans-serif; padding: 20px; }
+        .admin-container { max-width: 600px; margin: auto; background: #111; padding: 30px; border: 1px solid #D4AF37; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h2 { color: #D4AF37; text-align: center; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
+        
+        label { display: block; margin-top: 15px; color: #aaa; font-size: 0.8rem; text-transform: uppercase; }
+        input { width: 100%; padding: 12px; margin: 5px 0 15px 0; background: #000; border: 1px solid #333; color: white; border-radius: 5px; outline: none; }
+        input:focus { border-color: #D4AF37; }
+
+        #prod-file { display: none; }
+
+        .custom-file-upload {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #1a1a1a;
+            border: 2px dashed #333;
+            color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin: 5px 0 20px 0;
+            text-transform: none;
+            font-size: 0.9rem;
+        }
+
+        .custom-file-upload:hover { border-color: #D4AF37; background: #222; }
+        .custom-file-upload i { color: #D4AF37; font-size: 1.2rem; }
+
+        .preview-img { 
+            width: 100%; 
+            height: 200px; 
+            object-fit: contain; 
+            background: #000; 
+            margin-bottom: 15px; 
+            display: none; 
+            border-radius: 8px; 
+            border: 1px solid #D4AF37; 
+        }
+
+        button { width: 100%; padding: 15px; background: #D4AF37; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; text-transform: uppercase; transition: 0.3s; }
+        button:hover { background: #fff; color: #000; }
+        
+        .product-list { margin-top: 40px; border-top: 1px solid #333; padding-top: 20px; }
+        h3 { font-size: 1rem; color: #D4AF37; margin-bottom: 15px; text-transform: uppercase; }
+        
+        .product-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #000; margin-bottom: 10px; border-radius: 8px; border: 1px solid #222; }
+        .product-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 15px; border: 1px solid #D4AF37; }
+        .info { display: flex; align-items: center; }
+        
+        .btn-del { background: #ff4444; width: auto; padding: 8px 12px; margin-top: 0; font-size: 0.7rem; color: white; }
+        .btn-del:hover { background: #cc0000; color: white; }
+
+        .voltar-link { color: #D4AF37; display: block; text-align: center; margin-top: 20px; text-decoration: none; font-size: 0.9rem; transition: 0.3s; }
+        .voltar-link:hover { color: #fff; }
+    </style>
+</head>
+<body>
+
+<div class="admin-container">
+    <h2>Gerenciar Catálogo</h2>
+    
+    <label>Nome do Produto</label>
+    <input type="text" id="prod-nome" placeholder="Ex: Vestido Gala Gold">
+    
+    <label>Preço (R$)</label>
+    <input type="number" id="prod-preco" placeholder="Ex: 250.00">
+    
+    <label>Foto do Produto</label>
+    <img id="img-preview" class="preview-img">
+    
+    <label for="prod-file" class="custom-file-upload">
+        <i class="fas fa-camera"></i> 
+        <span id="file-name">Selecionar Imagem do Dispositivo</span>
+    </label>
+    <input type="file" id="prod-file" accept="image/*" onchange="previewImage()">
+    
+    <button onclick="salvarProduto()">Lançar Produto no Catálogo</button>
+
+    <div class="product-list" id="lista-admin"></div>
+    
+    <a href="produtos.html" class="voltar-link">← Ver Catálogo de Produtos</a>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+
+<script>
+    // Configuração do seu Banco de Dados
+    const firebaseConfig = {
+        databaseURL: "https://alestore-b6704-default-rtdb.firebaseio.com"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    let imagemBase64 = "";
+
+    function previewImage() {
+        const fileInput = document.getElementById('prod-file');
+        const fileNameSpan = document.getElementById('file-name');
+        const preview = document.getElementById('img-preview');
+        
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            fileNameSpan.innerText = "Imagem: " + file.name;
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                imagemBase64 = reader.result;
+                preview.src = reader.result;
+                preview.style.display = "block";
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function carregarAdmin() {
+        database.ref('produtos').on('value', (snapshot) => {
+            const lista = document.getElementById('lista-admin');
+            lista.innerHTML = '<h3>Produtos Ativos:</h3>';
+            const data = snapshot.val();
+            if (data) {
+                Object.keys(data).forEach((id) => {
+                    const p = data[id];
+                    lista.innerHTML += `
+                        <div class="product-item">
+                            <div class="info">
+                                <img src="${p.img}">
+                                <div>
+                                    <div style="font-weight:bold">${p.nome}</div>
+                                    <div style="color: #D4AF37; font-size: 0.8rem">R$ ${parseFloat(p.preco).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</div>
+                                </div>
+                            </div>
+                            <button class="btn-del" onclick="removerProduto('${id}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `;
+                });
+            }
+        });
+    }
+
+    function salvarProduto() {
+        const nome = document.getElementById('prod-nome').value;
+        const preco = document.getElementById('prod-preco').value;
+
+        if(!nome || !preco || !imagemBase64) {
+            return alert("Erro: Preencha o nome, preço e escolha uma imagem.");
+        }
+
+        const novoProduto = {
+            nome: nome,
+            preco: parseFloat(preco),
+            img: imagemBase64
+        };
+
+        database.ref('produtos').push(novoProduto)
+            .then(() => {
+                alert("Produto cadastrado com sucesso!");
+                document.getElementById('prod-nome').value = "";
+                document.getElementById('prod-preco').value = "";
+                document.getElementById('img-preview').style.display = "none";
+                document.getElementById('file-name').innerText = "Selecionar Imagem do Dispositivo";
+                imagemBase64 = "";
+            })
+            .catch(() => alert("Erro ao salvar. Verifique sua internet."));
+    }
+
+    function removerProduto(id) {
+        if(confirm("Deseja remover este produto?")) {
+            database.ref('produtos/' + id).remove();
+        }
+    }
+
+    carregarAdmin();
+</script>
+</body>
+</html>

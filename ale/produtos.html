@@ -3,98 +3,351 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Produtos | Alessandra Store</title>
+    <title>Catálogo Premium | Alessandra Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: #000; color: #fff; }
+        :root {
+            --gold: #D4AF37;
+            --gold-light: #f1d592;
+            --black: #0a0a0a;
+            --dark-grey: #1a1a1a;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Reset e Base */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        
+        html, body {
+            height: 100%;
+            background-color: var(--black);
+        }
+
+        body { 
+            color: #fff; 
+            overflow-x: hidden;
+            background: radial-gradient(circle at top right, #1a1500, #000);
+            display: flex;
+            flex-direction: column; /* Faz o rodapé ficar no final */
+        }
 
         header {
-            background-color: #000;
-            padding: 1.5rem 5%;
-            border-bottom: 2px solid #D4AF37;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 1rem 8%;
+            border-bottom: 1px solid var(--glass-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        .logo { font-size: 1.8rem; font-weight: bold; color: #fff; text-transform: uppercase; text-decoration: none; }
-        .logo span { color: #D4AF37; }
+        .logo img {
+            height: 50px; width: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--gold);
+        }
 
-        .container { padding: 50px 5%; }
-        h1 { color: #D4AF37; margin-bottom: 30px; text-align: center; }
+        .cart-icon-container {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #fff;
+            background: var(--glass);
+            padding: 10px;
+            border-radius: 50%;
+            border: 1px solid var(--glass-border);
+        }
 
-        #grid-produtos {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+        /* --- SIDEBAR --- */
+        #cart-sidebar {
+            position: fixed;
+            right: -100%;
+            top: 0;
+            width: 400px;
+            max-width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.98);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid var(--gold);
+            z-index: 1100;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #cart-sidebar.active { right: 0; }
+
+        .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .cart-header h2 { font-weight: 300; font-size: 1.1rem; letter-spacing: 2px; text-transform: uppercase; }
+
+        #cart-items { flex-grow: 1; overflow-y: auto; margin-bottom: 20px; }
+        
+        .cart-item {
+            display: flex; gap: 12px; margin-bottom: 15px; padding: 12px;
+            background: var(--glass); border-radius: 10px; align-items: center;
+        }
+        .cart-item img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
+
+        .cart-form { display: flex; flex-direction: column; gap: 8px; padding-top: 15px; border-top: 1px solid var(--glass-border); }
+        .cart-form input, .cart-form select, .cart-form textarea {
+            background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; font-size: 0.85rem;
+        }
+
+        .cart-total { padding: 15px 0; font-size: 1.2rem; text-align: center; border-top: 1px solid var(--glass-border); }
+        .cart-total span { color: var(--gold); font-weight: 700; }
+
+        /* --- CONTEÚDO --- */
+        .container { 
+            padding: 40px 8%; 
+            flex: 1; /* Faz a seção de produtos crescer para empurrar o footer */
+        }
+        
+        .header-title { text-align: center; margin-bottom: 40px; }
+        .header-title h1 { font-size: 1.8rem; font-weight: 300; letter-spacing: 3px; text-transform: uppercase; }
+        .header-title h1 span { color: var(--gold); font-weight: 700; }
+
+        #grid-produtos { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
+            gap: 25px; 
         }
 
         .card-produto {
-            background: #111;
-            border: 1px solid #333;
-            padding: 15px;
-            border-radius: 8px;
+            background: var(--glass); border: 1px solid var(--glass-border);
+            padding: 15px; border-radius: 15px; text-align: center; transition: 0.3s;
+        }
+
+        .card-produto img { width: 100%; height: 220px; object-fit: cover; border-radius: 10px; margin-bottom: 15px; }
+        .card-produto h3 { font-size: 0.9rem; color: #ccc; margin-bottom: 8px; }
+        .card-produto .preco { font-size: 1.3rem; font-weight: 700; margin-bottom: 15px; }
+
+        .btn-comprar {
+            background: none; color: var(--gold); border: 1px solid var(--gold);
+            padding: 12px; border-radius: 25px; font-weight: 600; width: 100%;
+            text-transform: uppercase; font-size: 0.75rem; cursor: pointer; transition: 0.3s;
+        }
+
+        .btn-finalizar {
+            background: var(--gold); color: #000; padding: 15px; border: none;
+            width: 100%; border-radius: 10px; font-weight: 700; text-transform: uppercase;
+            cursor: pointer; margin-top: 10px;
+        }
+
+        .voltar { display: block; margin-bottom: 20px; color: #fff; text-decoration: none; font-size: 0.75rem; opacity: 0.7; }
+
+        /* --- RODAPÉ --- */
+        footer {
+            background: #000;
+            padding: 40px 8% 20px;
+            border-top: 1px solid var(--glass-border);
             text-align: center;
-            transition: 0.3s;
         }
 
-        .card-produto:hover { border-color: #D4AF37; }
-        .card-produto img { width: 100%; border-radius: 5px; height: 180px; object-fit: cover; }
-        .card-produto h3 { margin: 15px 0 10px; font-size: 1.1rem; }
-        .card-produto .preco { color: #D4AF37; font-size: 1.4rem; font-weight: bold; margin-bottom: 15px; }
+        .footer-logo img { height: 40px; margin-bottom: 15px; border-radius: 50%; border: 1px solid var(--gold); }
+        .footer-socials { margin-bottom: 20px; }
+        .footer-socials a { color: #fff; font-size: 1.2rem; margin: 0 15px; transition: 0.3s; }
+        .footer-socials a:hover { color: var(--gold); }
+        .footer-copy { font-size: 0.7rem; opacity: 0.5; letter-spacing: 1px; }
 
-        .btn-whats {
-            display: block;
-            background-color: #D4AF37;
-            color: #000;
-            text-decoration: none;
-            padding: 10px;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: 0.3s;
+        @media (max-width: 768px) {
+            header { padding: 1rem 5%; }
+            .container { padding: 30px 5%; }
+            #grid-produtos { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+            .card-produto img { height: 160px; }
+            #cart-sidebar { width: 100%; }
         }
-
-        .btn-whats:hover { background-color: #fff; }
-
-        .voltar { display: inline-block; margin-bottom: 20px; color: #D4AF37; text-decoration: none; }
     </style>
 </head>
 <body>
 
     <header>
-        <a href="index.html" class="logo">Alessandra <span>Store</span></a>
+        <a href="index.html" class="logo">
+            <img src="ale.png" alt="Alessandra Store">
+        </a>
+        <div class="cart-icon-container" onclick="toggleCart()">
+            <i class="fas fa-shopping-bag"></i>
+            <span class="cart-count" id="cart-count" style="position: absolute; top: -5px; right: -5px; background: #fff; color: #000; font-size: 0.6rem; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 700;">0</span>
+        </div>
     </header>
 
-    <div class="container">
-        <a href="index.html" class="voltar">← Voltar para Início</a>
-        <h1>Nosso Catálogo <span>Completo</span></h1>
+    <div id="cart-sidebar">
+        <div class="cart-header">
+            <h2>Sua Bolsa</h2>
+            <span class="close-cart" onclick="toggleCart()" style="cursor:pointer; font-size: 1.2rem;"><i class="fas fa-times"></i></span>
+        </div>
+        
+        <div id="cart-items"></div>
 
-        <div id="grid-produtos">
-            </div>
+        <div class="cart-form">
+            <input type="text" id="cart-nome" placeholder="Seu Nome Completo">
+            <select id="cart-pagamento">
+                <option value="" disabled selected>Pagamento</option>
+                <option value="Pix">Pix</option>
+                <option value="Cartão">Cartão</option>
+                <option value="Dinheiro">Dinheiro</option>
+            </select>
+            <select id="cart-entrega">
+                <option value="" disabled selected>Entrega</option>
+                <option value="Retirada">Retirada no Local</option>
+                <option value="Motoboy">Motoboy</option>
+                <option value="Correios">Correios</option>
+            </select>
+            <textarea id="cart-obs" rows="2" placeholder="Tamanho, Cor, etc."></textarea>
+        </div>
+
+        <div class="cart-total">
+            TOTAL: <span id="total-price">R$ 0,00</span>
+        </div>
+        <button onclick="finalizarCompra()" class="btn-finalizar">Pedir via WhatsApp</button>
     </div>
 
+    <main class="container">
+        <a href="index.html" class="voltar"><i class="fas fa-arrow-left"></i> VOLTAR</a>
+        
+        <div class="header-title">
+            <h1>Nosso <span>Catálogo</span></h1>
+        </div>
+
+        <div id="grid-produtos"></div>
+    </main>
+
+    <footer>
+        <div class="footer-logo">
+            <img src="ale.png" alt="Alessandra Store">
+        </div>
+        <div class="footer-socials">
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-whatsapp"></i></a>
+        </div>
+        <p class="footer-copy">© 2026 ALESSANDRA STORE - TODOS OS DIREITOS RESERVADOS.</p>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+
     <script>
-        const produtos = [
-            { nome: "Mouse Gamer Gold", preco: "R$ 259,00", img: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=400&q=80" },
-            { nome: "Teclado Mecânico", preco: "R$ 580,00", img: "https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?auto=format&fit=crop&w=400&q=80" },
-            { nome: "Headset Elite", preco: "R$ 420,00", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=400&q=80" },
-            { nome: "Placa RTX 4090", preco: "R$ 9.500,00", img: "https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=400&q=80" },
-            { nome: "Monitor 144hz", preco: "R$ 1.250,00", img: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=400&q=80" },
-            { nome: "Cadeira Gamer", preco: "R$ 1.100,00", img: "https://images.unsplash.com/photo-1598550476439-6847785fce6e?auto=format&fit=crop&w=400&q=80" }
-        ];
+        const firebaseConfig = {
+            apiKey: "AIzaSyDtbK1BUeWZj_cuJamUAdo8FgMQm0blrd0",
+            authDomain: "alestore-b6704.firebaseapp.com",
+            databaseURL: "https://alestore-b6704-default-rtdb.firebaseio.com",
+            projectId: "alestore-b6704",
+            storageBucket: "alestore-b6704.firebasestorage.app",
+            appId: "1:530219295025:web:57891747a727b031889010"
+        };
 
-        const grid = document.getElementById('grid-produtos');
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-        produtos.forEach(p => {
-            grid.innerHTML += `
-                <div class="card-produto">
-                    <img src="${p.img}" alt="${p.nome}">
-                    <h3>${p.nome}</h3>
-                    <p class="preco">${p.preco}</p>
-                    <a href="#" class="btn-whats">Comprar Agora</a>
-                </div>
-            `;
-        });
+        let produtosSalvos = [];
+        let cart = [];
+
+        function fetchProdutos() {
+            database.ref('produtos').on('value', (snapshot) => {
+                const data = snapshot.val();
+                produtosSalvos = [];
+                const grid = document.getElementById('grid-produtos');
+                grid.innerHTML = "";
+
+                if (data) {
+                    Object.keys(data).forEach(id => {
+                        produtosSalvos.push({ id: id, ...data[id] });
+                    });
+                    renderProdutos();
+                } else {
+                    grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; opacity:0.5; padding: 50px;'>Em breve novidades...</p>";
+                }
+            });
+        }
+
+        function renderProdutos() {
+            const grid = document.getElementById('grid-produtos');
+            grid.innerHTML = ""; 
+            produtosSalvos.forEach(p => {
+                grid.innerHTML += `
+                    <div class="card-produto">
+                        <img src="${p.img}" alt="${p.nome}">
+                        <h3>${p.nome}</h3>
+                        <p class="preco">R$ ${parseFloat(p.preco).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</p>
+                        <button class="btn-comprar" onclick="addToCart('${p.id}')">Adicionar</button>
+                    </div>
+                `;
+            });
+        }
+
+        function addToCart(id) {
+            const produto = produtosSalvos.find(p => p.id === id);
+            cart.push({...produto});
+            updateCartUI();
+            toggleCart(true);
+        }
+
+        function updateCartUI() {
+            const cartItems = document.getElementById('cart-items');
+            const cartCount = document.getElementById('cart-count');
+            const totalPrice = document.getElementById('total-price');
+            cartItems.innerHTML = '';
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                total += parseFloat(item.preco);
+                cartItems.innerHTML += `
+                    <div class="cart-item">
+                        <img src="${item.img}">
+                        <div style="flex-grow:1">
+                            <p style="font-size:0.8rem; font-weight:600;">${item.nome}</p>
+                            <p style="color:var(--gold); font-size:0.8rem">R$ ${parseFloat(item.preco).toFixed(2)}</p>
+                        </div>
+                        <i class="fas fa-trash-alt" onclick="removeFromCart(${index})" style="color:#ff4444; cursor:pointer; font-size:0.9rem"></i>
+                    </div>
+                `;
+            });
+            cartCount.innerText = cart.length;
+            totalPrice.innerText = "R$ " + total.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function toggleCart(forceOpen = false) { 
+            const sidebar = document.getElementById('cart-sidebar');
+            if(forceOpen) sidebar.classList.add('active');
+            else sidebar.classList.toggle('active');
+        }
+
+        function finalizarCompra() {
+            if (cart.length === 0) return alert("Bolsa vazia!");
+            const nome = document.getElementById('cart-nome').value;
+            const pagamento = document.getElementById('cart-pagamento').value;
+            const entrega = document.getElementById('cart-entrega').value;
+            const obs = document.getElementById('cart-obs').value;
+
+            if(!nome || !pagamento || !entrega) return alert("Preencha os dados de entrega.");
+
+            let mensagem = "*PEDIDO - ALESSANDRA STORE*\n\n";
+            mensagem += `👤 *Cliente:* ${nome}\n💳 *Pagamento:* ${pagamento}\n🚚 *Entrega:* ${entrega}\n`;
+            if(obs) mensagem += `📝 *Obs:* ${obs}\n`;
+            mensagem += "\n*ITENS:*\n";
+
+            let total = 0;
+            cart.forEach(item => {
+                mensagem += `▫️ ${item.nome} (R$ ${parseFloat(item.preco).toFixed(2)})\n`;
+                total += parseFloat(item.preco);
+            });
+            mensagem += `\n*TOTAL: R$ ${total.toFixed(2)}*`;
+            
+            window.open(`https://wa.me/5521967752423?text=${encodeURIComponent(mensagem)}`, '_blank');
+        }
+
+        fetchProdutos();
     </script>
 </body>
 </html>
